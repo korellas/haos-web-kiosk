@@ -1,0 +1,54 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  app:
+    name: Home Assistant App lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Run Home Assistant App Lint
+        uses: frenck/action-addon-linter@v2.21
+        with:
+          path: "./web-kiosk"
+
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Run ShellCheck
+        run: |
+          shellcheck --version
+          shellcheck --external-sources \
+            web-kiosk/rootfs/etc/cont-init.d/*.sh \
+            web-kiosk/rootfs/etc/services.d/kiosk/run \
+            web-kiosk/rootfs/etc/services.d/kiosk/finish \
+            web-kiosk/rootfs/usr/bin/kiosk-session
+
+  hadolint:
+    name: Hadolint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Run Hadolint
+        uses: hadolint/hadolint-action@v3.3.0
+        with:
+          dockerfile: web-kiosk/Dockerfile
+          ignore: DL3018

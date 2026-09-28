@@ -1,0 +1,65 @@
+#!/usr/bin/with-contenv bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Run Cage with Chromium as its only client. Cage exits when Chromium exits;
+# s6 then restarts both.
+# ==============================================================================
+readonly PROFILE_DIR=/data/chromium
+
+export XDG_RUNTIME_DIR=/run/kiosk
+# Cage runs as root and opens DRM/input devices directly; there is no seatd or
+# logind in the container.
+export LIBSEAT_BACKEND=noop
+# Show the page even when no touchscreen or other input device is usable.
+export WLR_LIBINPUT_NO_DEVICES=1
+
+install -d -m 0700 "${XDG_RUNTIME_DIR}"
+rm -f "${XDG_RUNTIME_DIR}/browser.pid"
+mkdir -p "${PROFILE_DIR}"
+# Only this Chromium uses the profile. A lock left behind by a crash or power
+# loss would otherwise stop Chromium from starting.
+rm -f "${PROFILE_DIR}/SingletonLock" "${PROFILE_DIR}/SingletonSocket" "${PROFILE_DIR}/SingletonCookie"
+
+cage_args=()
+chromium_args=(
+    --ozone-platform=wayland
+    --kiosk
+    --no-first-run
+    --user-data-dir="${PROFILE_DIR}"
+    --password-store=basic
+    # The sandbox needs user namespaces, which the container does not permit.
+    --no-sandbox
+)
+if bashio::config.true 'debug'; then
+    cage_args+=(-D)
+    chromium_args+=(--enable-logging=stderr --log-level=0)
+fi
+mapfile -t extra_flags < <(bashio::config 'chromium_flags')
+for flag in "${extra_flags[@]}"; do
+    [[ -n "${flag}" ]] && chromium_args+=("${flag}")
+done
+
+# Invoked by the TERM/INT trap below.
+# shellcheck disable=SC2329
+stop_browser() {
+    bashio::log.info "Stopping Chromium"
+    if [[ -s "${XDG_RUNTIME_DIR}/browser.pid" ]]; then
+        kill -TERM "$(< "${XDG_RUNTIME_DIR}/browser.pid")" 2> /dev/null || true
+    else
+        kill -TERM "${cage_pid}" 2> /dev/null || true
+    fi
+}
+trap stop_browser TERM INT
+
+bashio::log.info "Starting Cage and Chromium"
+cage "${cage_args[@]}" -- /usr/bin/kiosk-session "$(bashio::config 'rotation')" \
+    /usr/lib/chromium/chromium "${chromium_args[@]}" "$(bashio::config 'url')" &
+cage_pid=$!
+
+# A trapped signal interrupts wait; keep waiting until Cage has exited.
+while :; do
+    status=0
+    wait "${cage_pid}" || status=$?
+    kill -0 "${cage_pid}" 2> /dev/null || break
+done
+exit "${status}"

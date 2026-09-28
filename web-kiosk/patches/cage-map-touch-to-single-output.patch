@@ -1,0 +1,42 @@
+diff --git a/output.c b/output.c
+index 9f2a708..6458497 100644
+--- a/output.c
++++ b/output.c
+@@ -24,6 +24,7 @@
+ #include <wlr/render/swapchain.h>
+ #include <wlr/render/wlr_renderer.h>
+ #include <wlr/types/wlr_compositor.h>
++#include <wlr/types/wlr_cursor.h>
+ #include <wlr/types/wlr_data_device.h>
+ #include <wlr/types/wlr_output.h>
+ #include <wlr/types/wlr_output_layout.h>
+@@ -174,12 +175,29 @@ handle_output_request_state(struct wl_listener *listener, void *data)
+ 	}
+ }
+ 
++/* Touchscreens that do not name their output (no WL_OUTPUT udev property) are
++ * mapped to the whole layout, where wlroots does not apply the output
++ * transform. With exactly one output in the layout, map the cursor to it so
++ * touch input follows a rotated output. */
++static void
++map_cursor_to_single_output(struct cg_server *server)
++{
++	struct wlr_output *single_output = NULL;
++	if (wl_list_length(&server->output_layout->outputs) == 1) {
++		struct wlr_output_layout_output *l_output =
++			wl_container_of(server->output_layout->outputs.next, l_output, link);
++		single_output = l_output->output;
++	}
++	wlr_cursor_map_to_output(server->seat->cursor, single_output);
++}
++
+ void
+ handle_output_layout_change(struct wl_listener *listener, void *data)
+ {
+ 	struct cg_server *server = wl_container_of(listener, server, output_layout_change);
+ 
+ 	view_position_all(server);
++	map_cursor_to_single_output(server);
+ 	update_output_manager_config(server);
+ }
+ 

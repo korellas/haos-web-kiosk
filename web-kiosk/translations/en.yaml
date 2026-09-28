@@ -1,0 +1,19 @@
+configuration:
+  url:
+    name: URL
+    description: >-
+      Page to show full-screen, for example http://homeassistant.local:8123.
+  rotation:
+    name: Rotation
+    description: >-
+      Output rotation applied by the compositor. Touch input follows the
+      rotation. Touch Display 2 is portrait by default; use 90 or 270 for
+      landscape.
+  chromium_flags:
+    name: Extra Chromium flags
+    description: >-
+      Additional Chromium command-line flags, one per entry, for example
+      --lang=en-GB.
+  debug:
+    name: Debug logging
+    description: Verbose compositor and browser logs for troubleshooting.

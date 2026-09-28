@@ -1,0 +1,13 @@
+#!/usr/bin/env bashio
+# shellcheck shell=bash
+# ==============================================================================
+# s6 restarts the kiosk after this script returns.
+# Arguments from s6: exit code (256 if killed by a signal), signal number.
+# ==============================================================================
+if [[ "${1}" -eq 256 ]]; then
+    bashio::log.warning "Kiosk was killed by signal ${2}"
+elif [[ "${1}" -ne 0 ]]; then
+    bashio::log.warning "Kiosk exited with code ${1}"
+else
+    bashio::log.info "Kiosk exited"
+fi

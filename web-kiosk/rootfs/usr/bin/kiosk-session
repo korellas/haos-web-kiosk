@@ -1,0 +1,28 @@
+#!/usr/bin/env bashio
+# shellcheck shell=bash
+# ==============================================================================
+# Cage's only client: rotate the output, then become the browser.
+# Usage: kiosk-session <rotation> <browser> [browser args...]
+# ==============================================================================
+readonly rotation=${1}
+shift
+
+# Rotation and logging must never keep the browser from starting.
+output=$(wlr-randr --json | jq -r '[.[] | select(.enabled)][0].name // empty') || output=""
+if bashio::var.is_empty "${output}"; then
+    bashio::log.warning "No enabled output reported by the compositor"
+else
+    if [[ "${rotation}" != "normal" ]]; then
+        wlr-randr --output "${output}" --transform "${rotation}" \
+            || bashio::log.error "Failed to rotate ${output} to ${rotation}"
+    fi
+    wlr-randr --json | jq -r --arg name "${output}" '
+        .[] | select(.name == $name)
+        | (.modes[] | select(.current)) as $mode
+        | "Output \(.name) (\(.make) \(.model)): \($mode.width)x\($mode.height)@\($mode.refresh | round)Hz, transform \(.transform)"
+    ' | while read -r line; do bashio::log.info "${line}"; done || true
+fi
+
+# The run script sends SIGTERM to this PID for a clean browser shutdown.
+echo "$$" > "${XDG_RUNTIME_DIR}/browser.pid"
+exec "$@"
