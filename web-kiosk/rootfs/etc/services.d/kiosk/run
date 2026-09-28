@@ -40,7 +40,7 @@ for flag in "${extra_flags[@]}"; do
 done
 
 # Invoked by the TERM/INT trap below.
-# shellcheck disable=SC2329
+# shellcheck disable=SC2317,SC2329
 stop_browser() {
     bashio::log.info "Stopping Chromium"
     if [[ -s "${XDG_RUNTIME_DIR}/browser.pid" ]]; then

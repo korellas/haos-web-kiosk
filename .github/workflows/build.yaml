@@ -35,10 +35,10 @@ jobs:
       matrix: ${{ steps.matrix.outputs.matrix }}
       image_name: ${{ steps.normalize.outputs.image_name }}
       registry_prefix: ${{ steps.normalize.outputs.registry_prefix }}
-      version: ${{ steps.info.outputs.version }}
-      name: ${{ steps.info.outputs.name }}
-      description: ${{ steps.info.outputs.description }}
-      url: ${{ steps.info.outputs.url }}
+      version: ${{ fromJSON(steps.info.outputs.version) }}
+      name: ${{ fromJSON(steps.info.outputs.name) }}
+      description: ${{ fromJSON(steps.info.outputs.description) }}
+      url: ${{ fromJSON(steps.info.outputs.url) }}
     steps:
       - name: Check out the repository
         uses: actions/checkout@v7.0.1
@@ -52,7 +52,7 @@ jobs:
       - name: Split image reference
         id: normalize
         env:
-          IMAGE: ${{ steps.info.outputs.image }}
+          IMAGE: ${{ fromJSON(steps.info.outputs.image) }}
         run: |
           echo "image_name=${IMAGE##*/}" >> "$GITHUB_OUTPUT"
           echo "registry_prefix=${IMAGE%/*}" >> "$GITHUB_OUTPUT"
