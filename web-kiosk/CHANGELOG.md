@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0
+
+- Add optional public-key SFTP deployment of private static dashboard files.
+- Serve deployed files on a container-local HTTP address for the kiosk browser.
+
 ## 0.1.1
 
 - Hide Cage's cursor when a touchscreen is connected, including before the

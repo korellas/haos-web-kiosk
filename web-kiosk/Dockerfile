@@ -43,8 +43,14 @@ RUN apk add --no-cache \
         mesa-dri-gallium \
         mesa-egl \
         mesa-gbm \
+        nginx \
+        openssh-server \
         wlr-randr \
         wlroots0.20
+
+RUN addgroup -S kiosk-deploy \
+    && adduser -S -D -H -G kiosk-deploy -s /sbin/nologin kiosk-deploy \
+    && passwd -d kiosk-deploy
 
 COPY --from=cage-build /out/ /
 COPY rootfs /

@@ -1,0 +1,18 @@
+Port 2222
+AddressFamily inet
+ListenAddress 0.0.0.0
+HostKey /data/deploy/ssh_host_ed25519_key
+AuthorizedKeysFile /data/deploy/authorized_keys
+AllowUsers kiosk-deploy
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin no
+UsePAM no
+PermitTTY no
+DisableForwarding yes
+Subsystem sftp internal-sftp
+
+Match User kiosk-deploy
+    ChrootDirectory /data/deploy
+    ForceCommand internal-sftp -d /site
