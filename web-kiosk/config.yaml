@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/apps/configuration#app-configuration
 name: Web Kiosk
-version: "0.1.0"
+version: "0.1.1"
 slug: web_kiosk
 description: Shows any URL full-screen on the display attached to this machine
 url: "https://github.com/korellas/haos-web-kiosk/tree/main/web-kiosk"

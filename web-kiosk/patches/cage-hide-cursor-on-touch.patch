@@ -1,0 +1,27 @@
+diff --git a/seat.c b/seat.c
+--- a/seat.c
++++ b/seat.c
+@@ -126,8 +126,9 @@ update_capabilities(struct cg_seat *seat)
+ 	}
+ 	wlr_seat_set_capabilities(seat->seat, caps);
+ 
+-	/* Hide cursor if the seat doesn't have pointer capability. */
+-	if ((caps & WL_SEAT_CAPABILITY_POINTER) == 0) {
++	/* Touch kiosks do not need a visible pointer, even if a mouse is present. */
++	if ((caps & WL_SEAT_CAPABILITY_POINTER) == 0 ||
++			(caps & WL_SEAT_CAPABILITY_TOUCH) != 0) {
+ 		wlr_cursor_unset_image(seat->cursor);
+ 	} else {
+ 		wlr_cursor_set_xcursor(seat->cursor, seat->xcursor_manager, DEFAULT_XCURSOR);
+@@ -482,6 +483,11 @@
+ handle_request_set_cursor(struct wl_listener *listener, void *data)
+ {
+ 	struct cg_seat *seat = wl_container_of(listener, seat, request_set_cursor);
++	/* Do not let the browser restore a cursor on a touchscreen. */
++	if (!wl_list_empty(&seat->touch)) {
++		return;
++	}
++
+ 	struct wlr_seat_pointer_request_set_cursor_event *event = data;
+ 	struct wlr_surface *focused_surface = event->seat_client->seat->pointer_state.focused_surface;
+ 	bool has_focused = focused_surface != NULL && focused_surface->resource != NULL;
