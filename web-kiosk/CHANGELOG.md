@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- Hide Cage's cursor when a touchscreen is connected, including before the
+  browser receives pointer focus. Keep the cursor on pointer-only displays.
+
 ## 0.1.0
 
 - Initial release: Cage (Wayland, DRM/KMS) with Chromium showing one configured

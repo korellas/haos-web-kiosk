@@ -2,7 +2,7 @@
 FROM ghcr.io/home-assistant/base:3.24-2026.08.0 AS base
 
 # ------------------------------------------------------------------------------
-# Cage, patched so touch input follows a rotated output (see patches/).
+# Cage, patched for rotated touch input and hidden cursors on touchscreens.
 # ------------------------------------------------------------------------------
 FROM base AS cage-build
 

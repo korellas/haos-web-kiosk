@@ -91,10 +91,10 @@ excluded), so a backup contains a signed-in browser session.
   coordinates only when the touch device is mapped to an output. Stock Cage
   maps a device only if udev gives it a `WL_OUTPUT` property, which the Home
   Assistant OS udev database does not. The image therefore builds Cage from
-  the release tarball with a small patch
-  ([`web-kiosk/patches`](web-kiosk/patches)) that maps the cursor to the
-  output when exactly one output exists. This follows the approach of the
-  open upstream proposal
+  the release tarball with patches ([`web-kiosk/patches`](web-kiosk/patches))
+  that map the cursor to the output when exactly one output exists and hide
+  its image when touch input is present. The mapping follows the approach of
+  the open upstream proposal
   [cage-kiosk/cage#388](https://github.com/cage-kiosk/cage/pull/388).
 - **No Xorg, no window manager, no desktop.** Nothing in this design needs
   them. The Xorg-based HAOS kiosks studied for this project request
