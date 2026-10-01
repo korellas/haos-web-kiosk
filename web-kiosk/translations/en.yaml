@@ -17,3 +17,11 @@ configuration:
   debug:
     name: Debug logging
     description: Verbose compositor and browser logs for troubleshooting.
+  deploy_authorized_keys:
+    name: Deployment public keys
+    description: >-
+      Ed25519 public keys allowed to upload the private dashboard by SFTP.
+      Keep private keys on the deploying computer. Also map the SFTP port in
+      Network settings to allow connections.
+network:
+  2222/tcp: SFTP deployment (disabled by default)

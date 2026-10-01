@@ -1,6 +1,6 @@
 # https://developers.home-assistant.io/docs/apps/configuration#app-configuration
 name: Web Kiosk
-version: "0.1.1"
+version: "0.2.0"
 slug: web_kiosk
 description: Shows any URL full-screen on the display attached to this machine
 url: "https://github.com/korellas/haos-web-kiosk/tree/main/web-kiosk"
@@ -58,6 +58,12 @@ devices:
 # Read-only host udev database; libinput only uses devices udev has initialized.
 udev: true
 
+# Map this port in the Network settings only when deploying a private site.
+ports:
+  2222/tcp: null
+ports_description:
+  2222/tcp: SFTP deployment (public-key authentication)
+
 backup_exclude:
   - "chromium/*/Cache"
   - "chromium/*/Code Cache"
@@ -68,9 +74,12 @@ options:
   rotation: normal
   chromium_flags: []
   debug: false
+  deploy_authorized_keys: []
 schema:
   url: url
   rotation: list(normal|90|180|270)
   chromium_flags:
     - "match(^--[A-Za-z0-9][A-Za-z0-9-]*(=.*)?$)"
   debug: bool
+  deploy_authorized_keys:
+    - str

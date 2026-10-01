@@ -38,7 +38,14 @@ jobs:
             web-kiosk/rootfs/etc/cont-init.d/*.sh \
             web-kiosk/rootfs/etc/services.d/kiosk/run \
             web-kiosk/rootfs/etc/services.d/kiosk/finish \
-            web-kiosk/rootfs/usr/bin/kiosk-session
+            web-kiosk/rootfs/etc/services.d/deploy-sftp/run \
+            web-kiosk/rootfs/etc/services.d/site/run \
+            web-kiosk/rootfs/usr/bin/kiosk-session \
+            web-kiosk/rootfs/usr/bin/kiosk-authorized-keys \
+            tests/authorized-keys.sh
+
+      - name: Test deployment public-key validation
+        run: bash tests/authorized-keys.sh
 
   hadolint:
     name: Hadolint
