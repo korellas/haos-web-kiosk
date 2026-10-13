@@ -1,5 +1,5 @@
 # https://developers.home-assistant.io/docs/apps/configuration#app-dockerfile
-FROM ghcr.io/home-assistant/base:3.24-2026.08.0 AS base
+FROM ghcr.io/home-assistant/base:3.24-2026.10.0 AS base
 
 # ------------------------------------------------------------------------------
 # Cage, patched for rotated touch input and hidden cursors on touchscreens.
